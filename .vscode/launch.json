@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/adria/OneDrive/Escritorio/Programación/RemoteaccessTrojan/Server",
-      "program": "c:/Users/adria/OneDrive/Escritorio/Programación/RemoteaccessTrojan/Server/build/Debug/outDebug",
+      "cwd": "c:/Users/adria/OneDrive/Escritorio/Programación/RemoteaccessTrojan/Client",
+      "program": "c:/Users/adria/OneDrive/Escritorio/Programación/RemoteaccessTrojan/Client/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
