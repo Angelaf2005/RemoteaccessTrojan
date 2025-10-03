@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include <windows.h>
 
 std::string executeCommand(const std::string& cmd) {
     // Function to execute commands in the system
@@ -22,7 +22,12 @@ std::string executeCommand(const std::string& cmd) {
     while ((n = fread(buf.data(), 1, BUF_SZ, pipe)) >0) {
         output.append(buf.data(), buf.data() + n);
     }
-
+    std::cout << output;
     _pclose(pipe);
     return output;
+}
+std::string obtain_directory(){
+    char path[MAX_PATH];
+    DWORD len = GetCurrentDirectory(MAX_PATH, path);
+    return std::string(path);
 }

@@ -5,6 +5,8 @@
 #include <iostream>
 #include<stdio.h>
 #include <cstdio>
+#include <string>
+
 
 
 #pragma comment(lib,"ws2_32.lib")
@@ -16,6 +18,7 @@ int main(){
     struct sockaddr_in server;
 	char recvbuf[512];
     int recvbuflen = 512;
+	std::string messages;
 
 	printf("\nInitialising Winsock...");
 	if (WSAStartup(MAKEWORD(2,2),&wsa) != 0)
@@ -50,11 +53,21 @@ int main(){
 		while(true){
 			ssize_t result = recv(acceptSocket, recvbuf, recvbuflen, 0);
 			if (result > 0) {
-				recvbuf[result] = '\0'; // Asegura que sea una cadena válida
-				std::cout << "Texto recibido: " << recvbuf << std::endl;
+			recvbuf[result] = '\0'; // Asegura que sea una cadena válida
+            printf("%s> ", recvbuf);
 			} else {
-				puts("Connection Error");
+			puts("Connection Error");
 			}
+			std::getline(std::cin, messages);
+        	send(acceptSocket,messages.c_str(),messages.size(),0);
+			result = recv(acceptSocket, recvbuf, recvbuflen, 0);
+			if (result > 0) {
+			recvbuf[result] = '\0'; // Asegura que sea una cadena válida
+            printf(recvbuf);
+			} else {
+			puts("Connection Error");
+			}
+
 		}
 	}
 
