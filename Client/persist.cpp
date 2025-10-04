@@ -10,7 +10,7 @@ bool persistence(const std::wstring& valueName, const std::wstring& path) {
     const wchar_t* subKey = L"Software\\Microsoft\\Windows\\CurrentVersion\\Run";
 
     // Create or Open HKCU/Run Key
-    if (RegOpenKeyExA (HKEY_CURRENT_USER, subKey, 0, KEY_WRITE, &hKey) != ERROR_SUCCESS) {
+    if (RegOpenKeyExW (HKEY_CURRENT_USER, subKey, 0, KEY_WRITE, &hKey) != ERROR_SUCCESS) {
             return false;
     }
 
