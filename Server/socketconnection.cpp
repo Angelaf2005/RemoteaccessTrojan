@@ -6,7 +6,7 @@
 #include<stdio.h>
 #include <cstdio>
 #include <string>
-
+#include "Keys.h"
 
 
 #pragma comment(lib,"ws2_32.lib")
@@ -95,12 +95,25 @@ void runServer(int port) {
     SOCKET serverSocket = createServerSocket(port);
     if (serverSocket == INVALID_SOCKET) return;
 
+    Keys* ServerKeys = KeyGeneration();
+    std::cout << ServerKeys->privateKey << std::endl;
+    std::cout << ServerKeys->publicKey << std::endl; 
+
+
+
+
+
+
     while (true) {
         SOCKET clientSocket = waitForClient(serverSocket);
         if (clientSocket == INVALID_SOCKET) {
             Sleep(1000); // espera antes de reintentar
             continue;
         }
+
+
+
+
 
         bool success = handleClient(clientSocket);
         closesocket(clientSocket);
@@ -113,6 +126,7 @@ void runServer(int port) {
 
     closesocket(serverSocket);
     WSACleanup();
+    delete(ServerKeys);
 }
 
 

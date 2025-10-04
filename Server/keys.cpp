@@ -2,6 +2,18 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "Keys.h"
+
+
+std::string toHex(const std::vector<unsigned char>& data) {
+    std::string hex;
+    char buf[3];
+    for (unsigned char byte : data) {
+        snprintf(buf, sizeof(buf), "%02x", byte);
+        hex += buf;
+    }
+    return hex;
+}
 
 bool initSodium() {
     return sodium_init() >= 0;
@@ -41,23 +53,14 @@ std::string decryptMessage(
     return std::string(decrypted.begin(), decrypted.end());
 }
 
-int main() {
-    if (!initSodium()) {
-        std::cerr << "Error al inicializar Libsodium\n";
-        return 1;
-    }
+Keys* KeyGeneration() {
 
     std::vector<unsigned char> publicKey, privateKey;
     generateKeyPair(publicKey, privateKey);
+    Keys* ServerKeys = new Keys;
+    ServerKeys->privateKey = toHex(privateKey);
+    ServerKeys->publicKey = toHex(publicKey);
 
-    std::string mensaje = "Hola Angel, esto es cifrado moderno!";
-    std::vector<unsigned char> nonce;
-    std::vector<unsigned char> cifrado = encryptMessage(mensaje, publicKey, privateKey, nonce);
-
-    std::string descifrado = decryptMessage(cifrado, publicKey, privateKey, nonce);
-
-    std::cout << "Original:   " << mensaje << "\n";
-    std::cout << "Descifrado: " << descifrado << "\n";
-
-    return 0;
+  
+    return ServerKeys;
 }
