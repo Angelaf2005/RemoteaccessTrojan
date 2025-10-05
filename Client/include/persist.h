@@ -4,6 +4,7 @@
 #include <string>
 std::filesystem::path getAppDataPath();
 bool fileExist(const std::filesystem::path& file_path);
+std::filesystem::path getExecutablePath();
 bool persistence(const std::wstring& valueName, const std::wstring& path);
 bool deletePersistence(const std::wstring& valueName);
 bool checkPersistence(const std::wstring& valueName);

