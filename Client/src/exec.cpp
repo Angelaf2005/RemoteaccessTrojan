@@ -26,6 +26,7 @@ std::string executeCommand(const std::string& cmd) {
     _pclose(pipe);
     return output;
 }
+
 std::string obtain_directory(){
     char path[MAX_PATH];
     DWORD len = GetCurrentDirectory(MAX_PATH, path);

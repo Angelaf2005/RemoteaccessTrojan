@@ -1,5 +1,6 @@
-#ifndef KEYS
-#define KEYS
+#ifndef KEYS_H
+#define KEYS_H
+
 #include <string>
 #include <sodium.h> 
 

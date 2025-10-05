@@ -2,8 +2,6 @@
 #include <iostream>
 #include <string>
 
-// MODULE NOT TESTED
-
 bool persistence(const std::wstring& valueName, const std::wstring& path) {
     // Function to apply persistence
     HKEY hKey;
