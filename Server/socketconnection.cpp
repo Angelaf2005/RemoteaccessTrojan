@@ -6,7 +6,7 @@
 #include<stdio.h>
 #include <cstdio>
 #include <string>
-#include "Keys.h"
+#include "include/Keys.h"
 
 
 #pragma comment(lib,"ws2_32.lib")
@@ -91,13 +91,11 @@ bool handleClient(SOCKET clientSocket) {
 
 void runServer(int port) {
     if (!initWinsock()) return;
+    char recvbuf[4096];
 
     SOCKET serverSocket = createServerSocket(port);
     if (serverSocket == INVALID_SOCKET) return;
 
-    Keys* ServerKeys = KeyGeneration();
-    std::cout << ServerKeys->privateKey << std::endl;
-    std::cout << ServerKeys->publicKey << std::endl; 
 
 
 
@@ -110,6 +108,27 @@ void runServer(int port) {
             Sleep(1000); // espera antes de reintentar
             continue;
         }
+
+
+        int m;
+        m = recv(clientSocket, recvbuf, sizeof(recvbuf) - 1, 0);
+        recvbuf[m] = '\0';
+        std::cout << recvbuf << std::endl;
+        std::string Public_key(recvbuf, m);
+        std::string keyAes = AesKey();
+        std::cout << "Clave AES generada (hex): " << keyAes << std::endl;
+
+        std::string ciphertext = encryptMessageSeal(keyAes,fromHex(Public_key));
+        std::cout << "Mensaje cifrado (hex): " << ciphertext << std::endl;
+        m = send(clientSocket,ciphertext.c_str(),ciphertext.size(),0);
+        if(m == SOCKET_ERROR) {
+        std::cerr << "Connection failed.\n";
+        closesocket(clientSocket);
+        return;
+        };
+
+        
+
 
 
 
@@ -126,7 +145,6 @@ void runServer(int port) {
 
     closesocket(serverSocket);
     WSACleanup();
-    delete(ServerKeys);
 }
 
 

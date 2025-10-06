@@ -2,7 +2,7 @@
 #include<winsock2.h>
 #include<string>
 #include<iostream>
-#include "exec.h"
+#include "include/keys.h"
 #include <windows.h>
 
 
@@ -21,6 +21,8 @@ bool initWinsock() {
 }
 
 SOCKET connectToServer(const std::string& ip, int port) {
+    char recvbuf[4096];
+    int m;
     SOCKET s = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
     if (s == INVALID_SOCKET) {
         std::cerr << "Socket creation failed: " << WSAGetLastError() << std::endl;
@@ -37,8 +39,25 @@ SOCKET connectToServer(const std::string& ip, int port) {
         closesocket(s);
         return INVALID_SOCKET;
     }
-
     std::cout << "Connected to server.\n";
+
+    Keys ClientKeys = KeyGeneration();
+ 
+    m = send(s,ClientKeys.publicKey.c_str(),ClientKeys.publicKey.size(),0); // cambia recvbuf por el mensaje
+    if(m == SOCKET_ERROR) {
+        std::cerr << "Connection failed.\n";
+        closesocket(s);
+        return INVALID_SOCKET;
+    };
+    m = recv(s, recvbuf, sizeof(recvbuf),0);
+    recvbuf[m] = '\0';
+    std::cout << "La llave Aes Enc del servidor es: " << recvbuf << std::endl;
+    std::string Aes_en(recvbuf, m);
+    std::string KeyAes = decryptMessageSeal(fromHex(Aes_en),fromHex(ClientKeys.publicKey),fromHex(ClientKeys.privateKey));
+    std::cout << "La llave Aes desencriptada AES es: " << KeyAes<< std::endl;
+
+
+
     return s;
 }
 
@@ -109,6 +128,10 @@ void cleanup(SOCKET s, HANDLE hReadOut, HANDLE hWriteIn, PROCESS_INFORMATION& pi
     closesocket(s);
     WSACleanup();
 }
+
+
+
+
 
  
 /* int main(int argc , char *argv[])
