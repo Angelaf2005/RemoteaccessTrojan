@@ -21,6 +21,36 @@ bool fileExist(const std::filesystem::path& file_path) {
     return std::filesystem::exists(file_path, ec) && std::filesystem::is_regular_file(file_path, ec);
 }
 
+bool directoryExist(const std::filesystem::path& dir_path) {
+    try {
+        return std::filesystem::exists(dir_path) &&std::filesystem::is_directory(dir_path);
+    } catch(const std::exception& ex) {
+        //std::cerr << ex.what() << '\n';
+        return false;
+    }
+}
+
+// Delete directory or file (if it's directory → recursive)
+bool deletePath(const std::filesystem::path& target) {
+    std::error_code ec;
+    if (std::filesystem::is_directory(target)) {
+        // Delete directory and his content
+        std::filesystem::remove_all(target, ec);
+        if (ec) {
+            //std::cerr << "Error deleting directory" << ec.message() << "\n";
+            return false;
+        }
+
+    } else {
+        // Delete file
+        if (std::filesystem::remove(target, ec) || ec) {
+            //std::cerr << "Error deleting the file" << ec.message() << "\n";
+            return false;
+        }
+    }
+    return true;
+}
+
 std::filesystem::path getExecutablePath() {
     char buffer[MAX_PATH] = {0};
     DWORD size = GetModuleFileNameA(nullptr, buffer, MAX_PATH);
