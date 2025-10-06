@@ -40,9 +40,9 @@ std::vector<unsigned char> fromHex(const std::string& hex) {
 
 
 std::string AesKey(){
-    unsigned char aesKey[16];
+    unsigned char aesKey[8];
     randombytes_buf(aesKey, sizeof(aesKey));
-    char hex[33]; 
+    char hex[17]; 
     sodium_bin2hex(hex, sizeof(hex), aesKey, sizeof(aesKey));
     return std::string(hex); 
 }
