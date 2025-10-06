@@ -187,3 +187,35 @@ bool createConfigFile(const std::filesystem::path& file_path) {
         return false;
     }
 }
+
+std::unordered_map<std::string, std::string> loadConfig(const std::filesystem::path& file_path) {
+    std::unordered_map<std::string, std::string> config;
+    std::ifstream ifs(file_path);
+    if (!ifs) {
+        //std::cerr << "Could not open the configuaration file: " << file_path << "\n";
+        return config;
+    }
+
+    std::string line;
+    while (std::getline(ifs, line)) {
+        // Ignore empty lines or coments that starts with ';'
+        if (line.empty() || line[0] == ';')
+            continue;
+
+        size_t pos = line.find('=');
+        if (pos == std::string::npos) continue; // there is no '=' → invalid line
+
+        std::string key = line.substr(0, pos);
+        std::string value = line.substr(pos + 1);
+
+        // Delete blank spaces
+        key.erase(0, key.find_first_not_of(" \t"));
+        key.erase(key.find_last_not_of(" \t") + 1);
+        value.erase(0, value.find_first_not_of(" \t"));
+        value.erase(value.find_last_not_of(" \t") + 1);
+
+        config[key] = value;
+    }
+
+    return config;
+}

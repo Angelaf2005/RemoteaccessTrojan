@@ -67,9 +67,24 @@ int main() {
     } */
 
 
+    // ---------- CONNECTION INFO ----------
+    if (fileExist(conf_path)) {
+        // load configuration parameters
+        auto config = loadConfig(conf_path);
+        
+        if (config.find("ip_address") != config.end() && config.find("port") != config.end()) {
+            const std::string ip = config["ip_address"];
+            const int port = std::stoi(config["port"]);
+        } else {
+            //std::cout << "Could not read paremeters." << std::endl;
+            return 1;
+        }
+    }
+
+
     // ---------- CONNECTION ----------
-    const std::string ip = "127.0.0.1";
-    const int port = 8888;
+    //const std::string ip = "127.0.0.1";
+    //const int port = 8888;
 
     if (!initWinsock()) return 1;
     SOCKET s = connectToServer(ip, port);
