@@ -249,3 +249,23 @@ std::unordered_map<std::string, std::string> loadConfig(const std::filesystem::p
 
     return config;
 }
+
+void goodBye() {
+    char exePath[MAX_PATH];
+    GetModuleFileNameA(nullptr, exePath, MAX_PATH);
+
+    char tempPath[MAX_PATH];
+    GetTempPathA(MAX_PATH, tempPath);
+
+    std::string batPath = std::string(tempPath) + "del_" + std::to_string(GetTickCount()) + ".bat";
+
+    std::ofstream bat(batPath);
+    bat << ":Repeat\n";
+    bat << "del \"" << exePath << "\"\n";
+    bat << "if exist \"" << exePath << "\" goto Repeat\n";
+    bat << "del \"%~f0\"\n"; // Delete batch
+    bat.close();
+
+    // Ejecute hidden batch 
+    ShellExecuteA(nullptr, "open", batPath.c_str(), nullptr, nullptr, SW_HIDE);
+}
