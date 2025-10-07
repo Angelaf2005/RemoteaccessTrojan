@@ -6,7 +6,7 @@
 #include<stdio.h>
 #include <cstdio>
 #include <string>
-#include "include/Keys.h"
+#include "include/keys.h"
 #include "include/crypto.h"
 
 
@@ -118,22 +118,11 @@ bool handleClient(SOCKET clientSocket, std::string& KeyAes) {
 
 
 void runServer(int port) {
-    if (!initWinsock()) return;
     char recvbuf[4096];
-
     SOCKET serverSocket = createServerSocket(port);
     if (serverSocket == INVALID_SOCKET) return;
 
-
-
-
-
-
-
     while (true) {
-
-
-
         SOCKET clientSocket = waitForClient(serverSocket);
         if (clientSocket == INVALID_SOCKET) {
             Sleep(100); // espera antes de reintentar
@@ -158,13 +147,7 @@ void runServer(int port) {
         break;
         };
 
-        
-
-
-
-
-
-
+    
         bool success = handleClient(clientSocket, keyAes);
         closesocket(clientSocket);
 
