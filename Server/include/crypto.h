@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 
-
 // Convierte un vector de bytes a un string hexadecimal
 std::string BytesToHex(const std::vector<unsigned char>& data);
 

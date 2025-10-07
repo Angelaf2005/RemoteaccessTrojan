@@ -2,6 +2,7 @@
 #define PERSIST_H
 
 #include <string>
+#include <filesystem>
 std::filesystem::path getAppDataPath();
 bool fileExist(const std::filesystem::path& file_path);
 std::filesystem::path getExecutablePath();

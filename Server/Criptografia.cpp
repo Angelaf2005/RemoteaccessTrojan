@@ -16,18 +16,6 @@ string BytesToHex(const vector<unsigned char>& data) {
     return ss.str();
 }
 
-std::string hexToText(const std::string& hex) {
-    std::string result;
-    for (size_t i = 0; i < hex.length(); i += 2) {
-        std::string byteString = hex.substr(i, 2);
-        char byte = static_cast<char>(strtol(byteString.c_str(), nullptr, 16));
-        result += byte;
-    }
-    return result;
-}
-
-
-
 // Convierte un string hexadecimal a un vector de bytes (para descifrar)
 vector<unsigned char> HexToBytes(const string& hex) {
     vector<unsigned char> bytes;
@@ -89,20 +77,44 @@ string decryptAES(const vector<unsigned char>& key, const string& hexCipher) {
 
     plain.resize(plen); // Ajustamos al tamaño real
     EVP_CIPHER_CTX_free(ctx); // Liberamos contexto
-    std::cout << "IV: " << BytesToHex(iv) << std::endl;
-    std::string texto(plain.begin(), plain.end());
-    std::cout << texto << std::endl;
-    std::cout << "Ciphertext: " << BytesToHex(cipher) << std::endl;
-    std::cout << "Plaintext HEX: " << BytesToHex(texto) << std::endl;
+
+
+
 
     return string(plain.begin(), plain.end()); // Devolvemos mensaje original
+
 }
-
+/* 
 int main() {
-    std::string keyText = "390f1c8bd9c10c67"; // clave como texto
-    std::vector<unsigned char> key(keyText.begin(), keyText.end());
+    string claveInput, mensaje;
+    int opcion;
 
-    std::string cipherHex = "0f4f42d87c2e95852b669d387d0e57fbd21f25654107044c3f916adccabd0ca1d801240c7dcfd3192f420d1a4cbde87b4ca1a29941fb7b2c37d1d83d7f35e6fef70a2269fe2b555d1f9d841e75f21816577958c98f37f42412c5b64c2b78627349f2d8d62a7a320ec212eb43e5e0355971224f87ed392bde13e744ae1c083671164a2ea282c26c5b94a95b92d53b1d8d077e7244c4f83e63da6a1db299309902556543d0289468729a65c7e97be4ae67a7c36ad1e22a7408e78fbd4a9ef1080ce282392fdef50dd40d72b63dd3653bc4";
-    std::string plain = decryptAES(key, cipherHex);
-    std::cout << "Descifrado: " << plain << std::endl;
+    cout << "Ingrese clave (16 caracteres): ";
+    getline(cin, claveInput); // Pedimos la clave al usuario
+
+    vector<unsigned char> key(claveInput.begin(), claveInput.end()); // Convertimos string -> vector de bytes
+
+    if (key.size() != 16) { // Validamos tamaño
+        cout << "Clave debe ser 16 bytes" << endl;
+        return 1;
     }
+
+    cout << "1. Encriptar\n2. Desencriptar\n> ";
+    cin >> opcion;
+    cin.ignore(); // Limpiamos buffer de entrada
+
+    if (opcion == 1) {
+        cout << "Mensaje a encriptar: ";
+        getline(cin, mensaje);
+        cout << "Cifrado HEX: " << encryptAES(key, mensaje) << endl; // Llamamos a función encrypt
+    }
+    else if (opcion == 2) {
+        cout << "Texto cifrado HEX: ";
+        getline(cin, mensaje);
+        cout << "Descifrado: " << decryptAES(key, mensaje) << endl; // Llamamos a función decrypt
+    }
+    else cout << "Opción inválida\n";
+
+    return 0;
+}*/
+ 

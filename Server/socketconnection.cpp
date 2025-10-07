@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <string>
 #include "include/Keys.h"
+#include "include/crypto.h"
 
 
 #pragma comment(lib,"ws2_32.lib")
@@ -59,15 +60,23 @@ SOCKET waitForClient(SOCKET serverSocket) {
     return client;
 }
 
-bool handleClient(SOCKET clientSocket) {
+bool handleClient(SOCKET clientSocket, std::string& KeyAes) {
     char recvbuf[4096];
     std::string comando;
+    std::string comando_enc;
+    std::vector<unsigned char> key(KeyAes.begin(), KeyAes.end());
     int n;
 
     while (true) {
         std::getline(std::cin, comando);
-        comando += "\r\n";
-        if (send(clientSocket, comando.c_str(), comando.size(), 0) == SOCKET_ERROR) {
+        comando_enc = encryptAES(key,comando);
+        std::cout << comando_enc << std::endl;
+
+
+
+
+
+        if (send(clientSocket, comando_enc.c_str(), comando_enc.size(), 0) == SOCKET_ERROR) {
             std::cerr << "Send failed.\n";
             return false;
         }
@@ -76,12 +85,15 @@ bool handleClient(SOCKET clientSocket) {
         int TBytes = 0;
         do {
             n = recv(clientSocket, recvbuf, sizeof(recvbuf) - 1, 0);
+        
             if (n <= 0) {
                 std::cerr << "Connection lost or error: " << WSAGetLastError() << std::endl;
                 return false;
             }
-            recvbuf[n] = '\0';
-            std::cout << recvbuf;
+            std::string comando_enc(recvbuf,n);
+            std::cout << comando_enc << std::endl;
+            comando = decryptAES(key,comando_enc);
+            std::cout << comando;
             TBytes += n;
             Sleep(100);
         } while (n == sizeof(recvbuf) - 1 || TBytes == 0);
@@ -134,7 +146,7 @@ void runServer(int port) {
 
 
 
-        bool success = handleClient(clientSocket);
+        bool success = handleClient(clientSocket, keyAes);
         closesocket(clientSocket);
 
         if (!success) {

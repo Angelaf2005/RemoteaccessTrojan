@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <openssl/evp.h> 
 #include <openssl/rand.h> // Para generar IV aleatorios, la sal
-
+#include "include/keys.h"
 using namespace std;
 //ENCRIPTAR AES 128 Cipher Block Chaining
 // Convierte un vector de bytes a un string hexadecimal (para mostrar el cifrado)
@@ -28,7 +28,6 @@ vector<unsigned char> HexToBytes(const string& hex) {
 string encryptAES(const vector<unsigned char>& key, const string& msg) {
     vector<unsigned char> iv(16); // IV de 16 bytes
     RAND_bytes(iv.data(), iv.size()); // Generamos IV aleatorio
-    std::cout << iv << std::endl; 
     EVP_CIPHER_CTX* ctx = EVP_CIPHER_CTX_new(); // Creamos contexto de cifrado
     EVP_EncryptInit_ex(ctx, EVP_aes_128_cbc(), NULL, key.data(), iv.data()); // Inicializamos AES-128-CBC
 
@@ -51,12 +50,12 @@ string encryptAES(const vector<unsigned char>& key, const string& msg) {
     out.insert(out.end(), iv.begin(), iv.end());
     out.insert(out.end(), cipher.begin(), cipher.end());
 
-    return BytesToHex(out); // Retornamos como string hexadecimal
+    return toHex(out); // Retornamos como string hexadecimal
 }
 
 // Recibe clave y string hex de IV+cipher, devuelve el mensaje original
 string decryptAES(const vector<unsigned char>& key, const string& hexCipher) {
-    auto data = HexToBytes(hexCipher); // Convertimos hex a bytes
+    auto data = fromHex(hexCipher); // Convertimos hex a bytes
 
     // Separamos IV (primeros 16 bytes) y ciphertext (resto)
     vector<unsigned char> iv(data.begin(), data.begin() + 16);
