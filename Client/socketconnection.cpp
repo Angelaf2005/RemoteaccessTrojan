@@ -56,10 +56,10 @@ std::string send_keys(SOCKET& s){
     };
     m = recv(s, recvbuf, sizeof(recvbuf),0);
 
-    std::cout << "La llave Aes Enc del servidor es: " << recvbuf << std::endl;
+
     std::string Aes_en(recvbuf, m);
     std::string KeyAes = decryptMessageSeal(fromHex(Aes_en),fromHex(ClientKeys.publicKey),fromHex(ClientKeys.privateKey));
-    std::cout << "La llave Aes desencriptada AES es: " << KeyAes<< std::endl;
+
     return KeyAes;
 }
 
@@ -109,11 +109,12 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
                 continue;
             }
             std::cout << "Reconectado con éxito.\n";
+            std::string newKey = send_keys(s);
+            key = std::vector<unsigned char>(newKey.begin(), newKey.end());
             continue;
         }
         std::string message_enc(recvbuf,n);
         std::string messages_dec = decryptAES(key,message_enc);
-        std::cout << messages_dec << std::endl;
         messages_dec +="\r\n";
 
         DWORD bytesWritten;
@@ -124,7 +125,6 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
             if (ReadFile(hReadOut, recvbuf, sizeof(recvbuf) - 1, &bytesRead, NULL) && bytesRead > 0) {
                 std::string messages_dec(recvbuf,bytesRead);
                 message_enc = encryptAES(key,messages_dec);
-                std::cout << message_enc << std::endl;
                 int j = send(s, message_enc.c_str(), message_enc.size(), 0);
                 if (j == SOCKET_ERROR) break;
             }

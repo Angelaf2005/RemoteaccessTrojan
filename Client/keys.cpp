@@ -88,7 +88,6 @@ Keys KeyGeneration() {
     keys.publicKey = toHex(publicKey);
     keys.privateKey = toHex(privateKey);
 
-    std::cout << toHex(publicKey) << std::endl;
     
     return keys;
 }

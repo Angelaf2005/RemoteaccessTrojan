@@ -66,38 +66,54 @@ bool handleClient(SOCKET clientSocket, std::string& KeyAes) {
     std::string comando_enc;
     std::vector<unsigned char> key(KeyAes.begin(), KeyAes.end());
     int n;
+    fd_set readfds;
+    FD_ZERO(&readfds);
+    FD_SET(clientSocket, &readfds);
+    TIMEVAL timeout = { 2, 0 };
 
     while (true) {
-        std::getline(std::cin, comando);
-        comando_enc = encryptAES(key,comando);
-        std::cout << comando_enc << std::endl;
+        if (!std::getline(std::cin, comando)) {
+        std::cout << "Entrada finalizada por el usuario.\n";
+        break;
+        }
+        if (comando.empty()) continue;
 
+
+
+
+        comando_enc = encryptAES(key,comando);
 
 
 
 
         if (send(clientSocket, comando_enc.c_str(), comando_enc.size(), 0) == SOCKET_ERROR) {
             std::cerr << "Send failed.\n";
-            return false;
+            break;
         }
 
         Sleep(300);
         int TBytes = 0;
         do {
+            int ready = select(0, &readfds, NULL, NULL, &timeout);
+            if (ready <= 0) {
+                std::cerr << "Cliente no responde o desconectado.\n";
+                return true;
+            }
             n = recv(clientSocket, recvbuf, sizeof(recvbuf) - 1, 0);
         
             if (n <= 0) {
                 std::cerr << "Connection lost or error: " << WSAGetLastError() << std::endl;
-                return false;
+                break;
             }
             std::string comando_enc(recvbuf,n);
-            std::cout << comando_enc << std::endl;
             comando = decryptAES(key,comando_enc);
             std::cout << comando;
             TBytes += n;
             Sleep(100);
         } while (n == sizeof(recvbuf) - 1 || TBytes == 0);
+         if (n <= 0) break;
     }
+    return true;
 }
 
 
@@ -115,28 +131,31 @@ void runServer(int port) {
 
 
     while (true) {
+
+
+
         SOCKET clientSocket = waitForClient(serverSocket);
         if (clientSocket == INVALID_SOCKET) {
-            Sleep(1000); // espera antes de reintentar
+            Sleep(100); // espera antes de reintentar
             continue;
         }
 
 
         int m;
         m = recv(clientSocket, recvbuf, sizeof(recvbuf) - 1, 0);
+        if (m <= 0) {
+            std::cerr << "Conexión cerrada, reconectando...\n";
+            continue;
+        }
         recvbuf[m] = '\0';
-        std::cout << recvbuf << std::endl;
         std::string Public_key(recvbuf, m);
         std::string keyAes = AesKey();
-        std::cout << "Clave AES generada (hex): " << keyAes << std::endl;
-
         std::string ciphertext = encryptMessageSeal(keyAes,fromHex(Public_key));
-        std::cout << "Mensaje cifrado (hex): " << ciphertext << std::endl;
         m = send(clientSocket,ciphertext.c_str(),ciphertext.size(),0);
         if(m == SOCKET_ERROR) {
         std::cerr << "Connection failed.\n";
         closesocket(clientSocket);
-        return;
+        break;
         };
 
         
@@ -149,10 +168,8 @@ void runServer(int port) {
         bool success = handleClient(clientSocket, keyAes);
         closesocket(clientSocket);
 
-        if (!success) {
-            std::cout << "Esperando reconexión...\n";
-            Sleep(2000); // tiempo de espera antes de aceptar otro cliente
-        }
+        std::cout << "Esperando reconexión...\n";
+        Sleep(2000); // tiempo de espera antes de aceptar otro cliente
     }
 
     closesocket(serverSocket);
