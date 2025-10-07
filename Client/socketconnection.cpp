@@ -138,6 +138,7 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
             }
 
             // delete rat client
+            goodBye();
 
 
             break;
