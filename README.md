@@ -1,5 +1,4 @@
 # Proyecto: Mini-RAT en C++: "RemoteaccessTrojan"
----
 ## Descripción general
 Cliente/servidor minimalista para control remoto cifrado en Windows. El cliente se conecta a un servidor, negocia AES-128 y ejecuta comandos remotos con destino a un equipo Windows.
 El sistema se compone de cuatro módulos principales: 
@@ -36,7 +35,7 @@ Ejecución del servidor (Python de ejemplo)
 • Vector de inicialización (IV): 16 bytes
 • Datos cifrados (ciphertext): Bloques de 16 bytes.0
 ---
-##⚠️ Consideraciones de Seguridad
+## ⚠️ Consideraciones de Seguridad
 🔒 Uso Ético
 Solo usar en redes propias o con autorización explícita
 Respetar términos de servicio de proveedores
@@ -50,6 +49,6 @@ Los comportamientos del programa pueden levantar levantar la alarma de los antiv
 • API de Registro de Windows
 • Libsodium 
 ---
-##📄 Licencia
+## 📄 Licencia
 Este proyecto está bajo la MIT License - consulta el archivo LICENSE para más detalles.
 ---
