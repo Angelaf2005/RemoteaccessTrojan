@@ -93,13 +93,10 @@ int main() {
     const int port = 8888;
 
     if (!initWinsock()) return 1;
+
     SOCKET s = connectToServer(ip, port);
     if (s == INVALID_SOCKET) return 1;
     keyAes = send_keys(s);
-
-
-
-
 
 
     HANDLE hReadOut, hWriteOut, hReadIn, hWriteIn;

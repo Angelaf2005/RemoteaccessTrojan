@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <cstdlib>
 #include <system_error>
+#include <unordered_map>
 
 
 std::filesystem::path getAppDataPath() {
@@ -266,6 +267,6 @@ void goodBye() {
     bat << "del \"%~f0\"\n"; // Delete batch
     bat.close();
 
-    // Ejecute hidden batch 
+    // Execute hidden batch 
     ShellExecuteA(nullptr, "open", batPath.c_str(), nullptr, nullptr, SW_HIDE);
 }

