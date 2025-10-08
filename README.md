@@ -10,10 +10,10 @@
 ## Descripción general
 Cliente/servidor minimalista para control remoto cifrado en Windows. El cliente se conecta a un servidor, negocia AES-128 y ejecuta comandos remotos con destino a un equipo Windows.
 El sistema se compone de cuatro módulos principales: 
-1) Comm: Se encarga de establecer comunicaciones entre cliente y servidor usando Winsock2, gestionando conexión TCP.
-2) Exec:Procesa los comandos del servidor y devuelve la salida del comando de forma cifrada  
-3) Criptografía: Mediante AES 128 CBC se cifra y decifran los mensajes, uso de Libsodium para intercambiar de forma segura la clave AES entre cliente y servidor.
-4) Persistencia:Implementa una copia del ejecutable hacia la carpeta del usuario %APPDATA%, crear un registro que permite ejecutar el código, y también permite borrar la persistencia de forma remota.  
+1) socketconnection: Se encarga de establecer comunicaciones entre cliente y servidor usando Winsock2, gestionando conexión TCP.
+2) keys: Se encraga de la generaicón de llaves para cifrado.
+3) crypto: Mediante AES 128 CBC se cifra y decifran los mensajes, uso de Libsodium para intercambiar de forma segura la clave AES entre cliente y servidor.
+4) persist:Implementa una copia del ejecutable hacia la carpeta del usuario %APPDATA%, crear un registro que permite ejecutar el código, y también permite borrar la persistencia de forma remota.
 
 ---
 ## Integrantes
