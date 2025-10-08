@@ -135,7 +135,7 @@ bool copyExe(const std::filesystem::path& sourceFile, const std::filesystem::pat
         std::error_code ec;
         if (!std::filesystem::exists(destFolder)) {
             if (!std::filesystem::create_directories(destFolder, ec)) {
-                std::cerr << "No se pudo crear la carpeta destino: " << ec.message() << "\n";
+                //std::cerr << "No se pudo crear la carpeta destino: " << ec.message() << "\n";
                 return false;
             }
         }
@@ -146,13 +146,13 @@ bool copyExe(const std::filesystem::path& sourceFile, const std::filesystem::pat
         // Copy file
         std::filesystem::copy_file(sourceFile, destFile, std::filesystem::copy_options::overwrite_existing, ec);
         if (ec) {
-            std::cerr << "Error al copiar el archivo: " << ec.message() << "\n";
+            //std::cerr << "Error al copiar el archivo: " << ec.message() << "\n";
             return false;
         }
 
         return true;
     } catch (const std::exception& ex) {
-        std::cerr << "Excepcion al copiar el archivo: " << ex.what() << "\n";
+        //std::cerr << "Excepcion al copiar el archivo: " << ex.what() << "\n";
         return false;
 
     }

