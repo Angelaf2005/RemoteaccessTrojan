@@ -133,7 +133,7 @@ void runServer(int port) {
         int m;
         m = recv(clientSocket, recvbuf, sizeof(recvbuf) - 1, 0);
         if (m <= 0) {
-            std::cerr << "Conexión cerrada, reconectando...\n";
+            std::cerr << "Conexion cerrada, reconectando...\n";
             continue;
         }
         recvbuf[m] = '\0';
@@ -151,7 +151,7 @@ void runServer(int port) {
         bool success = handleClient(clientSocket, keyAes);
         closesocket(clientSocket);
 
-        std::cout << "Esperando reconexión...\n";
+        std::cout << "Esperando reconexion...\n";
         Sleep(2000); // tiempo de espera antes de aceptar otro cliente
     }
 

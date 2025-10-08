@@ -27,7 +27,7 @@ std::vector<unsigned char> fromHex(const std::string& hex) {
             bin.data(), bin.size(),
             hex.c_str(), hex.size(),
             nullptr, &bin_len, nullptr) != 0) {
-        throw std::runtime_error("Hex inválido o malformado.");
+        throw std::runtime_error("Hex invalido o malformado.");
     }
 
     bin.resize(bin_len); // Ajusta al tamaño real
