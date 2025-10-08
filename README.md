@@ -1,4 +1,4 @@
-# Proyecto: Mini‑RAT en C++: "RemoteaccessTrojan"
+# Proyecto: Mini‑RAT en C++: "RemoteAccessTrojan"
 
 > ⚠️ **Aviso importante (uso educativo)**  
 > Este repositorio contiene código con funcionalidades capaces de controlar remotamente un equipo.  
