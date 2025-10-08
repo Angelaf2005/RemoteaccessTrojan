@@ -43,6 +43,21 @@ g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp .\persist.cpp -Iin
  g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp -Iinclude -IC:\libsodium\include\ -LC:\libsodium\lib\ -IC:\openssl\include\ -LC:\openssl\lib\ -lws2_32 -lsodium -lssl -lcrypto -o rat_server.exe
 ```
 
+
+## Ejecución
+### Cliente
+Se debe editar el archivo de configuración rat_client.conf en la carpeta RAT de AppData para editar direccion IP y Puerto al servidor.
+```
+./rat_client.exe
+```
+
+
+### Servidor
+```
+./rat_server.exe 8888
+```
+
+
 ---
 ## Formato de mensajes AES (CBC) 
 • Longitud total del payload: 4 bytes
