@@ -17,8 +17,8 @@ El sistema se compone de cuatro módulos principales:
 
 ---
 ## Integrantes
-- Angel Adrian Alvarez Flores — Módulo Comm
-- Abraham Alejandro Carreon Soriano — Módulo Exec
+- Angel Adrian Alvarez Flores — Módulo socketconnection
+- Abraham Alejandro Carreon Soriano — Módulo keys
 - Jesus Kenneth Maurizio Martinez Vazquez  — Módulo Crypto
 - Raul Alejandro Rios Tururbiates — Módulo Persist
 ---
@@ -31,8 +31,17 @@ El sistema se compone de cuatro módulos principales:
 
 ---
 ## Compilación:
-Ejecución del cliente:
-Ejecución del servidor (Python de ejemplo):
+Requisito: Para cada libreria utilizada (libsodium y openssl) contar con ruta al directorio bin de cada libreria en la variable de entorno PATH.
+### Compilación del cliente
+```
+g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp .\persist.cpp -Iinclude -IC:\libsodium\include\ -LC:\libsodium\lib\ -IC:\openssl\include\ -LC:\openssl\lib\ -lws2_32 -lsodium -lcrypto -lssl -o rat_client.exe
+```
+
+
+### Compilación del servidor:
+```
+ g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp -Iinclude -IC:\libsodium\include\ -LC:\libsodium\lib\ -IC:\openssl\include\ -LC:\openssl\lib\ -lws2_32 -lsodium -lssl -lcrypto -o rat_server.exe
+```
 
 ---
 ## Formato de mensajes AES (CBC) 
@@ -48,7 +57,7 @@ Solo usar en redes propias o con autorización explícita
 Respetar términos de servicio de proveedores
 Propósito educativo/administrativo únicamente
 🛡️ Detección
-Los comportamientos del programa pueden levantar levantar la alarma de los antivirus
+Los comportamientos del programa pueden levantar la alarma de los antivirus
 
 ---
 
