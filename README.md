@@ -40,7 +40,7 @@ g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp .\persist.cpp -Iin
 
 ### Compilación del servidor:
 ```
- g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp -Iinclude -IC:\libsodium\include\ -LC:\libsodium\lib\ -IC:\openssl\include\ -LC:\openssl\lib\ -lws2_32 -lsodium -lssl -lcrypto - static - static-libgcc  - static-libstdc++ -o rat_server.exe
+ g++ .\main.cpp .\socketconnection.cpp .\keys.cpp .\crypto.cpp -Iinclude -IC:\libsodium\include\ -LC:\libsodium\lib\ -IC:\openssl\include\ -LC:\openssl\lib\ -lws2_32 -lsodium -lssl -lcrypto -static -static-libgcc  -static-libstdc++ -o rat_server.exe
 ```
 
 
